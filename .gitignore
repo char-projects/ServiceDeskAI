@@ -1,10 +1,13 @@
 node_modules/
 npm-debug.log*
 .env
-backend/.env
 /dist
 __pycache__/
 *.py[cod]
 .DS_Store
 build
 npm-debug.log
+uploads
+uploads/.*
+.idea/.*
+.idea

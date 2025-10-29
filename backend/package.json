@@ -1,17 +1,26 @@
 {
   "name": "service-desk-backend",
-  "version": "0.1.0",
-  "main": "src/server.js",
+  "version": "1.0.0",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "build": "rm -rf dist && mkdir -p dist && cp -R src/* dist/",
+    "start": "node dist/index.js",
+    "dev": "nodemon --watch dist --exec node dist/index.js"
   },
   "dependencies": {
-    "dotenv": "^16.0.0",
-    "express": "^4.18.2",
-    "axios": "^1.5.0"
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.2",
+    "multer": "^2.0.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
-  }
+  },
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
 }
