@@ -1,9 +1,10 @@
 require('dotenv').config();
-const { join } = require('path'); // Import join from path
+const { join } = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 const ticketRoutes = require('./routes/tickets');
+const userRoutes = require('./routes/users');
 
 const app = express();
 app.use(express.json());
@@ -11,6 +12,7 @@ app.use(express.json());
 app.use('/uploads', express.static(join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/tickets', ticketRoutes);
+app.use('/api/users', userRoutes);
 
 app.get('/health', (req, res) => res.json({ ok:
     mongoose.connection.readyState === 1

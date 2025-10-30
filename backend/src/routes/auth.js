@@ -18,7 +18,8 @@ router.post('/register', async (req, res) => {
         const hashed = await bcrypt.hash(password, SALT_ROUNDS);
         const user = await User.create({ name, email, password: hashed, role });
 
-        res.json({ user: { id: user._id, email: user.email, name: user.name } });
+        const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '8h' });
+        res.json({ token, user: { id: user._id, email: user.email, name: user.name, role: user.role } });
     } catch (e) {
         res.status(500).json({ error: 'Server error' });
     }

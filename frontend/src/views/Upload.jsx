@@ -1,51 +1,120 @@
-import React from 'react'
-import { FiSend, FiCamera, FiShare2 } from "react-icons/fi";
-
-const NeumorphismButton = () => {
-    return (
-        <button
-            className={`
-        px-4 py-2 rounded-full 
-        flex items-center gap-2 
-        text-slate-500
-        shadow-[-5px_-5px_10px_rgba(255,_255,_255,_0.8),_5px_5px_10px_rgba(0,_0,_0,_0.25)]
-        
-        transition-all
-
-        hover:shadow-[-1px_-1px_5px_rgba(255,_255,_255,_0.6),_1px_1px_5px_rgba(0,_0,_0,_0.3),inset_-2px_-2px_5px_rgba(255,_255,_255,_1),inset_2px_2px_4px_rgba(0,_0,_0,_0.3)]
-        hover:text-violet-500
-    `}
-        >
-            <FiSend />
-            <span>Hover Me</span>
-        </button>
-    );
-};
+import React, { useRef, useState, useEffect } from 'react'
+import { FiSend, FiCamera, FiShare, FiShare2, FiMap } from "react-icons/fi";
 
 function Upload() {
+    const fileInputRef = useRef(null)
+    const cameraInputRef = useRef(null)
+    const [image, setImage] = useState({ url: '/default.jpg', isDefault: true })
+
+    useEffect(() => {
+        return () => {
+            if (image && image.url) URL.revokeObjectURL(image.url)
+        }
+    }, [image])
+
+    const openFilePicker = () => fileInputRef.current && fileInputRef.current.click()
+    const openCameraPicker = () => cameraInputRef.current && cameraInputRef.current.click()
+
+    const onSelectFile = (e) => {
+        const file = e.target.files && e.target.files[0]
+        if (!file) return
+        if (image && image.url && !image.isDefault) URL.revokeObjectURL(image.url)
+        const url = URL.createObjectURL(file)
+        setImage({ file, url, isDefault: false })
+    }
+
+    const clearImage = () => {
+        if (image && image.url && !image.isDefault) URL.revokeObjectURL(image.url)
+        setImage({ url: '/default.jpg', isDefault: true })
+        if (fileInputRef.current) fileInputRef.current.value = ''
+        if (cameraInputRef.current) cameraInputRef.current.value = ''
+    }
+
     return (
-        <div className="justify-items-center">
-            <div className="text-red-500">ServiceDeskAI</div>
-            <div className="flex items-center gap-3 text-lg">
-                <span>Upload report</span>
-                <button
-                    type="button"
-                    aria-label="Attach photo"
-                    className="p-1 rounded hover:bg-white/10"
-                >
-                    <FiCamera />
-                </button>
-                <button
-                    type="button"
-                    aria-label="Share report"
-                    className="p-1 rounded hover:bg-white/10"
-                >
-                    <FiShare2 />
-                </button>
+    <div className="container mx-auto px-4 pt-4 h-screen flex flex-col overflow-hidden pb-32 md:pb-24">
+            <div className="text-center">
+                <div className="font-bold text-3xl">ServiceDeskAI</div>
             </div>
-            <div>Describe the problem</div>
-            <div className="min-h-[200px] flex items-center justify-center">
-                <NeumorphismButton />
+            <div className="mt-4 grid gap-6 md:grid-cols-2 flex-1">
+                <div className="p-4 flex flex-col">
+                    <div className="flex items-center justify-between md:justify-start gap-3 mb-3">
+                        <span className="text-lg font-bold">Upload report</span>
+                        <div className="flex items-center gap-2 ml-2">
+                            <button onClick={openCameraPicker} className="mr-2 p-2 rounded text-gray-700 bg-gray-400 hover:bg-gray-500" aria-label="Attach photo">
+                                <FiCamera />
+                            </button>
+                            <button onClick={openFilePicker} className="p-2 rounded text-gray-700 bg-white hover:bg-gray-300" aria-label="Share report">
+                                <FiShare />
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="border border-white rounded-xl p-2 flex-1 flex items-center justify-center">
+                    <div className="aspect-square flex items-center justify-center bg-transparent mx-auto relative overflow-hidden rounded-md"
+                        style={{ width: 'min(100%, 40vh)' }}>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={onSelectFile}
+                    />
+                    <input
+                        ref={cameraInputRef}
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        className="hidden"
+                        onChange={onSelectFile}
+                    />
+
+                                {image ? (
+                                    <>
+                                        <img src={image.url} alt="preview" className="absolute inset-0 w-full h-full object-cover object-center" />
+                                        {!image.isDefault && (
+                                            <button
+                                                onClick={clearImage}
+                                                aria-label="Remove image"
+                                                className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1"
+                                            >
+                                                ✕
+                                            </button>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className="w-full h-full flex flex-col items-center justify-center gap-2"></div>
+                                )}
+                    </div>
+                </div>
+            </div>
+
+                <div className="p-4 flex flex-col">
+                    <div className="rounded-xl p-4 space-y-2 bg-gray-200 flex-1 flex flex-col">
+                        <div className="text-gray-600 text-sm">Describe the problem</div>
+                        <textarea
+                            className="bg-white rounded w-full text-gray-900 p-2 border border-gray-300 resize-none flex-1 min-h-[120px]"
+                            placeholder="the door that leads to the conference room is broken, it doesn't close."
+                        />
+
+                        <div className="flex items-center justify-between mt-4">
+                            <div className="flex items-center gap-2">
+                                <button className="p-2 rounded text-gray-600 border-2 border-gray-600" aria-label="Add location">
+                                    <FiMap />
+                                </button>
+                                <button className="p-2 rounded text-gray-600 border-2 border-gray-600" aria-label="Share">
+                                    <FiShare2 />
+                                </button>
+                            </div>
+
+                            <div className="flex items-center">
+                                <button className="px-4 py-2 rounded flex items-center gap-2 text-white shadow-md hover:bg-gray-700 bg-gray-600">
+                                    <span>Send</span>
+                                    <FiSend />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     )

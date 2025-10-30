@@ -2,6 +2,7 @@ node_modules/
 npm-debug.log*
 .env
 /dist
+/dist/.*
 __pycache__/
 *.py[cod]
 .DS_Store
