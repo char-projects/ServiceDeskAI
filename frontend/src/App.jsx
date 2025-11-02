@@ -4,6 +4,7 @@ import Upload from "./views/Upload.jsx";
 import Report from "./views/Report.jsx";
 import Profile from "./views/Profile.jsx";
 import Login from "./views/Login.jsx";
+import Admin from "./views/Admin.jsx";
 import NavBar from "./components/NavBar.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
@@ -28,6 +29,12 @@ const App = () => {
                     <Route path="/profile" element={
                         <ProtectedRoute>
                             <Profile />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/admin" element={
+                        <ProtectedRoute>
+                            <Admin />
                         </ProtectedRoute>
                     } />
                 </Routes>

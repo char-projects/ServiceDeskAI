@@ -10,13 +10,14 @@ services:
       - db_data:/data/db
 
   backend:
-    build:
+    build:  
       context: ./backend
       dockerfile: Dockerfile
     env_file:
       - ./backend/.env
     environment:
       - MONGO_URI=${MONGO_URI}
+      - INTERROGATOR_BASE_URL=${INTERROGATOR_BASE_URL}
     ports:
       - "4000:4000"
     depends_on:

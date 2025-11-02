@@ -5,6 +5,8 @@ function Upload() {
     const fileInputRef = useRef(null)
     const cameraInputRef = useRef(null)
     const [image, setImage] = useState({ url: '/default.jpg', isDefault: true })
+    const [analysis, setAnalysis] = useState(null)
+    const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
         return () => {
@@ -89,10 +91,10 @@ function Upload() {
             </div>
 
                 <div className="p-4 flex flex-col">
-                    <div className="rounded-xl p-4 space-y-2 bg-gray-200 flex-1 flex flex-col">
-                        <div className="text-gray-600 text-sm">Describe the problem</div>
+                    <div className="rounded-xl p-4 space-y-2 bg-gray-300 flex-1 flex flex-col">
+                        <div className="text-gray-700 text-sm">Describe the problem</div>
                         <textarea
-                            className="bg-white rounded w-full text-gray-900 p-2 border border-gray-300 resize-none flex-1 min-h-[120px]"
+                            className="bg-white border border-gray-500 rounded w-full text-gray-900 p-2 resize-none flex-1 min-h-[120px]"
                             placeholder="the door that leads to the conference room is broken, it doesn't close."
                         />
 
@@ -107,13 +109,48 @@ function Upload() {
                             </div>
 
                             <div className="flex items-center">
-                                <button className="px-4 py-2 rounded flex items-center gap-2 text-white shadow-md hover:bg-gray-700 bg-gray-600">
-                                    <span>Send</span>
+                                <button onClick={async () => {
+                                    if (!image || image.isDefault) return alert('Please choose an image first')
+                                    try {
+                                        setIsLoading(true)
+                                        setAnalysis(null)
+
+                                        const form = new FormData()
+                                        form.append('image', image.file)
+
+                                        const token = localStorage.getItem('token')
+
+                                        const res = await fetch('/api/interrogate/analyze', {
+                                            method: 'POST',
+                                            body: form,
+                                            headers: token ? { 'Authorization': `Bearer ${token}` } : undefined
+                                        })
+                                        if (!res.ok) {
+                                            const err = await res.json().catch(() => ({}))
+                                            throw new Error(err.error || 'Upload failed')
+                                        }
+
+                                        const data = await res.json()
+                                        setAnalysis(data)
+                                    } catch (e) {
+                                        console.error(e)
+                                        alert(e.message || 'Upload failed')
+                                    } finally {
+                                        setIsLoading(false)
+                                    }
+                                }} className="px-4 py-2 rounded flex items-center gap-2 text-white shadow-md hover:bg-gray-700 bg-gray-600">
+                                    <span>{isLoading ? 'Analyzing...' : 'Send'}</span>
                                     <FiSend />
                                 </button>
                             </div>
                         </div>
                     </div>
+                    {analysis && (
+                        <div className="mt-4 p-3 rounded border">
+                            <div className="font-semibold mb-2">Analysis result</div>
+                            <pre className="text-sm whitespace-pre-wrap break-words">{JSON.stringify(analysis, null, 2)}</pre>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

@@ -7,7 +7,6 @@ const authRoutes = require('./routes/auth');
 const ticketRoutes = require('./routes/tickets');
 const userRoutes = require('./routes/users');
 const interrogateRoutes = require('./routes/api');
-const uploadsRoutes = require('./routes/uploads');
 
 const app = express();
 app.use(cors());
@@ -18,7 +17,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/interrogate', interrogateRoutes);
-app.use('/api/interrogate', uploadsRoutes);
 
 app.get('/health', (req, res) => res.json({ ok:
     mongoose.connection.readyState === 1
